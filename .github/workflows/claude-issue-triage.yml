@@ -1,0 +1,86 @@
+name: Claude Issue Triage
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    # Evita que el propio bot dispare el workflow en bucle al editar el issue
+    if: github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Issue Triage
+        id: claude-triage
+        uses: anthropics/claude-code-action@v1
+        env:
+          GH_TOKEN: ${{ github.token }}
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: '--allowed-tools "Bash(gh label list:*),Bash(gh label create:*),Bash(gh issue view:*),Bash(gh issue edit:*),Bash(gh issue comment:*),Bash(gh api:*)"'
+          prompt: |
+            Eres un asistente de triage de issues para el repositorio ${{ github.repository }},
+            un juego de Tetris en JavaScript vainilla (ver CLAUDE.md para arquitectura: index.html,
+            style.css, game.js).
+
+            Tu tarea es analizar el issue #${{ github.event.issue.number }} y hacer dos cosas:
+            asignarle labels apropiados y publicar un diagnóstico general en español.
+
+            Pasos:
+
+            1. Lee el issue completo, incluyendo comentarios existentes:
+               gh issue view ${{ github.event.issue.number }} --json title,body,labels,comments
+
+            2. Explora el código relevante del repo (game.js, index.html, style.css, CLAUDE.md)
+               para entender si el issue describe un bug real, una mejora, una pregunta, etc.
+               Fundamenta tu análisis en el código real (funciones, líneas, archivos concretos).
+
+            3. Gestiona los labels:
+               - Lista los labels existentes: gh label list
+               - Elige los que apliquen al issue (por ejemplo bug, enhancement, question,
+                 documentation, duplicate, invalid, wontfix, good first issue, help wanted).
+               - Si el issue trata un área específica del juego y ningún label existente encaja
+                 bien (por ejemplo "gameplay", "rendering", "controls", "scoring"), crea uno nuevo:
+                 gh label create "<nombre>" --color "<hex>" --description "<descripción corta>"
+               - Aplica los labels elegidos:
+                 gh issue edit ${{ github.event.issue.number }} --add-label "<label1>,<label2>"
+               - Si el issue fue editado y ya tenía labels de un análisis anterior que ya no
+                 corresponden, quítalos con --remove-label.
+
+            4. Publica (o actualiza) un comentario de diagnóstico en español, con esta estructura
+               exacta en Markdown:
+
+               <!-- claude-triage -->
+               ## 🔍 Diagnóstico automático
+
+               **Resumen:** (una o dos frases resumiendo el problema o pedido)
+
+               **Tipo:** (bug / mejora / pregunta / duplicado / no válido, etc.)
+
+               **Causa probable / análisis:** (explicación técnica referenciando archivos y
+               funciones concretas del repo, ej. `game.js:collide`, `game.js:tryRotate`)
+
+               **Archivos afectados:** (lista de archivos relevantes)
+
+               **Enfoque de solución sugerido:** (pasos de alto nivel para implementar la
+               solución más adelante; no implementes código, solo describe el enfoque)
+
+               IMPORTANTE sobre duplicados: antes de comentar, revisa los comentarios ya
+               obtenidos en el paso 1. Si alguno ya empieza con el marcador oculto
+               "<!-- claude-triage -->", NO crees un comentario nuevo: actualiza ese comentario
+               existente con el diagnóstico revisado, usando:
+                 gh api repos/${{ github.repository }}/issues/comments/<comment_id> \
+                   -X PATCH -f body="<nuevo cuerpo del comentario>"
+               (obtén <comment_id> del JSON del paso 1). Si no existe un comentario con ese
+               marcador, créalo con:
+                 gh issue comment ${{ github.event.issue.number }} --body "<cuerpo>"
