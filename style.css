@@ -112,6 +112,26 @@ body {
   transform: translateX(20px);
 }
 
+.skin-select {
+  background: var(--kbd-bg);
+  color: var(--fg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.skin-select:focus {
+  outline: 1px solid var(--value-color);
+}
+
+#board.skin-neon {
+  background: #08060f;
+  box-shadow: 0 0 40px var(--board-shadow), 0 0 30px rgba(120, 0, 255, 0.15) inset;
+}
+
 .game-container {
   display: flex;
   gap: 20px;
