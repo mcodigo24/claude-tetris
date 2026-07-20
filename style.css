@@ -243,3 +243,137 @@ kbd {
 #restart-btn:hover {
   background: #9bbdff;
 }
+
+.overlay-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.secondary-btn {
+  background: transparent;
+  color: var(--controls-color);
+  border: 1px solid var(--kbd-border);
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 11px;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.secondary-btn:hover {
+  color: var(--fg);
+  border-color: var(--value-color);
+}
+
+/* ---- Highscore entry ---- */
+.highscore-entry {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.highscore-entry.hidden {
+  display: none;
+}
+
+.highscore-entry-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--value-color);
+  letter-spacing: 1px;
+}
+
+#highscore-name-input {
+  background: var(--kbd-bg);
+  border: 1px solid var(--kbd-border);
+  border-radius: 4px;
+  color: var(--fg);
+  padding: 6px 10px;
+  font-size: 13px;
+  text-align: center;
+  width: 160px;
+}
+
+#highscore-name-input:focus {
+  outline: none;
+  border-color: var(--value-color);
+}
+
+#save-score-btn {
+  background: var(--value-color);
+  color: var(--bg);
+  border: none;
+  border-radius: 6px;
+  padding: 6px 20px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+}
+
+#save-score-btn:hover {
+  background: #9bbdff;
+}
+
+/* ---- Stats row ---- */
+.stats-row {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: var(--controls-color);
+  letter-spacing: 0.5px;
+}
+
+.stats-row strong {
+  color: var(--value-color);
+}
+
+/* ---- Highscore table ---- */
+.highscore-table {
+  width: 100%;
+}
+
+.highscore-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+}
+
+.highscore-table th {
+  color: var(--label-color);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-align: left;
+  padding: 2px 6px;
+  border-bottom: 1px solid var(--kbd-border);
+}
+
+.highscore-table td {
+  color: var(--fg);
+  padding: 3px 6px;
+}
+
+.highscore-table td:nth-child(2),
+.highscore-table th:nth-child(2),
+.highscore-table td:nth-child(3),
+.highscore-table th:nth-child(3),
+.highscore-table td:nth-child(4),
+.highscore-table th:nth-child(4) {
+  text-align: right;
+}
+
+.highscore-table tr.highlight td {
+  color: var(--value-color);
+  font-weight: 700;
+}
+
+.highscore-table .empty-row td {
+  color: var(--controls-color);
+  text-align: center;
+  font-style: italic;
+}
